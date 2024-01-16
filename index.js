@@ -24,8 +24,18 @@ if (!(json instanceof Array)) {
 }
 /** @type {number[]} */
 const prs = json.map(_ => _.number);
+prs.length = 1; // for debugging
 for (const pr of prs) {
-  system(`cd repo && git fetch origin pull/${pr}/head:pr-${pr}`);
+  const commands = [
+    'cd repo',                                   // enter repo
+    'git checkout -- .',                         // make sure we have no changes like examples/package-lock.json
+    `git fetch origin pull/${pr}/head:pr-${pr}`, // fetch PR
+    `git switch pr-${pr}`,                       // enter PR
+    'cd examples',                               // enter examples
+    'npm run build',                             // build examples
+  ];
+  const cmd = commands.join(' && ');
+  system(cmd);
   // git switch <local_branch_name></local_branch_name>
   // npm run build
   // save build output somewhere else...
