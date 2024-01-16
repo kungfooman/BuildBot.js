@@ -19,6 +19,10 @@ function system(cmd) {
 // system(`git clone ${repo} repo`);
 const resp = await fetch('https://api.github.com/repos/playcanvas/engine/pulls?state=open');
 const json = await resp.json();
+if (!(json instanceof Array)) {
+  throw new Error("JSON PR Response isn't an array.");
+}
+/** @type {number[]} */
 const prs = json.map(_ => _.number);
 for (const pr of prs) {
   system(`cd repo && git fetch origin pull/${pr}/head:pr-${pr}`);
@@ -26,4 +30,3 @@ for (const pr of prs) {
   // npm run build
   // save build output somewhere else...
 }
-
